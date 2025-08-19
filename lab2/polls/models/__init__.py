@@ -11,3 +11,4 @@ from .person import Person, MyPerson, OrderedPerson
 from .piece import Piece, Article, Book, BookReview
 from .manager import NewManager, ExtraManagers
 from .blog_entry import Author, Entry
+from .poll import Poll
