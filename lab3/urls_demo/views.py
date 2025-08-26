@@ -1,5 +1,74 @@
+import datetime
+import asyncio
+from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.shortcuts import render
+from django.template.loader import render_to_string, get_template, select_template
 from django.views.generic import TemplateView
 from django.views import View
+
+# View render template với context mẫu
+def template_demo(request):
+	context = {
+		'first_name': 'John',
+		'last_name': 'Doe',
+		'info': {'email': 'john@example.com'},
+		'user': type('User', (), {'username': 'johndoe'})(),
+		'fruits': ['Apple', 'Banana', 'Cherry'],
+		'text': 'the web framework for perfectionists with deadlines',
+		'is_active': True,
+		'explain': [
+			'Ví dụ này minh họa cách truyền context vào template Django.',
+			'Template sử dụng biến, filter, tag for, if, comment.',
+			'Bạn có thể mở rộng context để truyền thêm dữ liệu động.',
+			'URL: /urls-demo/template-demo/'
+		]
+	}
+	html = render(request, 'demo_template.html', context)
+	# Thêm phần giải thích phía trên
+	explain_html = '<h3>Giải thích:</h3><ul>' + ''.join(f'<li>{e}</li>' for e in context['explain']) + '</ul>'
+	return HttpResponse(explain_html + html.content.decode())
+
+# View dùng render_to_string
+def template_string_demo(request):
+	context = {
+		'first_name': 'Jane',
+		'last_name': 'Smith',
+		'info': {'email': 'jane@example.com'},
+		'user': type('User', (), {'username': 'janesmith'})(),
+		'fruits': ['Orange', 'Mango'],
+		'text': 'django template string demo',
+		'is_active': False,
+		'explain': [
+			'Ví dụ này sử dụng render_to_string để render template ra chuỗi.',
+			'Bạn có thể dùng kết quả này để gửi email, trả về API, hoặc nhúng vào response.',
+			'URL: /urls-demo/template-string-demo/'
+		]
+	}
+	html = render_to_string('demo_template.html', context)
+	explain_html = '<h3>Giải thích:</h3><ul>' + ''.join(f'<li>{e}</li>' for e in context['explain']) + '</ul>'
+	return HttpResponse(explain_html + html)
+
+# View dùng select_template
+def select_template_demo(request):
+	context = {
+		'first_name': 'Alice',
+		'last_name': 'Nguyen',
+		'info': {'email': 'alice@example.com'},
+		'user': type('User', (), {'username': 'aliceng'})(),
+		'fruits': ['Kiwi', 'Lemon'],
+		'text': 'select template demo',
+		'is_active': True,
+		'explain': [
+			'Ví dụ này sử dụng select_template để chọn template đầu tiên tồn tại trong danh sách.',
+			'Thường dùng khi muốn cho phép override template theo app, theme, hoặc user.',
+			'Nếu not_exist.html không tồn tại, sẽ dùng demo_template.html.',
+			'URL: /urls-demo/select-template-demo/'
+		]
+	}
+	template = select_template(['not_exist.html', 'demo_template.html'])
+	html = template.render(context, request)
+	explain_html = '<h3>Giải thích:</h3><ul>' + ''.join(f'<li>{e}</li>' for e in context['explain']) + '</ul>'
+	return HttpResponse(explain_html + html)
 
 # TemplateView trực tiếp trong URLconf
 class AboutTemplateView(TemplateView):
@@ -22,7 +91,6 @@ class AboutView(TemplateView):
 		return context
 
 # Async class-based view
-import asyncio
 class AsyncView(View):
 	async def get(self, request, *args, **kwargs):
 		await asyncio.sleep(1)
@@ -70,8 +138,6 @@ class BookListView(View):
 			},
 		)
 		return response
-import datetime
-from django.http import HttpResponse, HttpResponseNotFound, Http404
 
 # A simple view trả về thời gian hiện tại
 def current_datetime(request):
@@ -159,7 +225,6 @@ def detail_404(request, poll_id):
 	""", status=400)
 
 # Async view example
-import asyncio
 async def async_current_datetime(request):
 	await asyncio.sleep(0.1)
 	now = datetime.datetime.now()
@@ -173,8 +238,6 @@ async def async_current_datetime(request):
 		</ul>
 	'''
 	return HttpResponse(html)
-
-from django.http import HttpResponse
 
 def index(request):
 	return HttpResponse("""
@@ -329,7 +392,6 @@ def detail(request, pk):
 	""")
 
 # Custom 404 handler
-from django.http import HttpResponseNotFound
 def custom_404_view(request, exception):
 	return HttpResponseNotFound("""
 		<h2>Custom 404 page - Not Found</h2>
