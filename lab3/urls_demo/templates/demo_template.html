@@ -1,0 +1,18 @@
+{# Demo template: biến, tag, filter, comment #}
+<h2>Demo Django Template</h2>
+<ul>
+    <li>Biến: Họ tên: {{ first_name }} {{ last_name }}</li>
+    <li>Biến truy cập dict: {{ info.email }}</li>
+    <li>Biến truy cập thuộc tính: {{ user.username }}</li>
+    <li>Biến truy cập list: {{ fruits.0 }}, {{ fruits.1 }}</li>
+    <li>Filter: {{ text|title }}</li>
+    <li>Comment: {# Đây là comment, không hiển thị #}</li>
+    <li>Tag if: {% if is_active %}Tài khoản đang hoạt động{% else %}Tài khoản bị khóa{% endif %}</li>
+    <li>Tag for:
+        <ul>
+        {% for fruit in fruits %}
+            <li>{{ forloop.counter }}. {{ fruit|upper }}</li>
+        {% endfor %}
+        </ul>
+    </li>
+</ul>

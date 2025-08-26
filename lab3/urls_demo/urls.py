@@ -14,6 +14,9 @@ extra_patterns = [
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('template-demo/', views.template_demo, name='template-demo'),
+    path('template-string-demo/', views.template_string_demo, name='template-string-demo'),
+    path('select-template-demo/', views.select_template_demo, name='select-template-demo'),
     # Class-based views
     path('about-template/', views.AboutTemplateView.as_view(), name='about-template'),
     path('about/', views.AboutView.as_view(), name='about-class'),
