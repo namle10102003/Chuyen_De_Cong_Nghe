@@ -14,6 +14,11 @@ extra_patterns = [
 
 urlpatterns = [
     path('', views.index, name='index'),
+    # Class-based views
+    path('about-template/', views.AboutTemplateView.as_view(), name='about-template'),
+    path('about/', views.AboutView.as_view(), name='about-class'),
+    path('async-cbv/', views.AsyncView.as_view(), name='async-cbv'),
+    path('books/', views.BookListView.as_view(), name='book-list'),
     path('current-datetime/', views.current_datetime, name='current-datetime'),
     path('async-current-datetime/', views.async_current_datetime, name='async-current-datetime'),
     path('my-view/', views.my_view, name='my-view'),

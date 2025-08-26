@@ -1,3 +1,75 @@
+from django.views.generic import TemplateView
+from django.views import View
+
+# TemplateView trực tiếp trong URLconf
+class AboutTemplateView(TemplateView):
+	template_name = "about.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['extra'] = "Đây là TemplateView sử dụng trực tiếp trong URLconf. Bạn có thể truyền context vào template nếu muốn."
+		context['note'] = "TemplateView rất phù hợp cho các trang tĩnh hoặc chỉ cần truyền ít dữ liệu."
+		return context
+
+# Subclass TemplateView
+class AboutView(TemplateView):
+	template_name = "about.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['extra'] = "Đây là AboutView kế thừa TemplateView, bạn có thể mở rộng logic, truyền thêm context, v.v."
+		context['note'] = "Bạn có thể override get_context_data để truyền nhiều dữ liệu động vào template."
+		return context
+
+# Async class-based view
+import asyncio
+class AsyncView(View):
+	async def get(self, request, *args, **kwargs):
+		await asyncio.sleep(1)
+		html = """
+			<h2>Hello async world!</h2>
+			<ul>
+				<li>Đây là ví dụ async class-based view.</li>
+				<li>View này sử dụng async def để xử lý bất đồng bộ.</li>
+				<li>Thường dùng cho các tác vụ IO-bound như gọi API, truy vấn DB async, ...</li>
+				<li>URL: /urls-demo/async-cbv/</li>
+			</ul>
+		"""
+		return HttpResponse(html)
+
+# Giả lập BookListView (không cần model thực)
+class BookListView(View):
+	def get(self, request, *args, **kwargs):
+		books = [
+			{"title": "Book 1", "publication_date": datetime.datetime(2023, 1, 1, 10, 0)},
+			{"title": "Book 2", "publication_date": datetime.datetime(2024, 5, 20, 15, 30)},
+		]
+		last_book = max(books, key=lambda b: b["publication_date"])
+		html = f"""
+			<h2>Book List (Class-based View)</h2>
+			<ul>
+				<li>Danh sách sách (giả lập):</li>
+				{''.join(f'<li>{b['title']} - {b['publication_date']}</li>' for b in books)}
+				<li>Last Modified: {last_book['publication_date'].strftime('%a, %d %b %Y %H:%M:%S GMT')}</li>
+				<li>GET sẽ trả về danh sách sách, HEAD chỉ trả về header Last-Modified.</li>
+				<li>URL: /urls-demo/books/</li>
+				<li>Đây là ví dụ CBV với cả GET và HEAD.</li>
+			</ul>
+		"""
+		return HttpResponse(html)
+
+	def head(self, request, *args, **kwargs):
+		books = [
+			{"title": "Book 1", "publication_date": datetime.datetime(2023, 1, 1, 10, 0)},
+			{"title": "Book 2", "publication_date": datetime.datetime(2024, 5, 20, 15, 30)},
+		]
+		last_book = max(books, key=lambda b: b["publication_date"])
+		response = HttpResponse(
+			headers={
+				"Last-Modified": last_book["publication_date"].strftime("%a, %d %b %Y %H:%M:%S GMT")
+			},
+		)
+		return response
 import datetime
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 
