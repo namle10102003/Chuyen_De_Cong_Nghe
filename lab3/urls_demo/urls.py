@@ -14,6 +14,11 @@ extra_patterns = [
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('current-datetime/', views.current_datetime, name='current-datetime'),
+    path('async-current-datetime/', views.async_current_datetime, name='async-current-datetime'),
+    path('my-view/', views.my_view, name='my-view'),
+    path('created/', views.created_view, name='created-view'),
+    path('detail-404/<int:poll_id>/', views.detail_404, name='detail-404'),
     path('articles/2003/', views.special_case_2003, name='special-case-2003'),
     path('articles/<int:year>/', views.year_archive, name='year-archive'),
     path('articles/<int:year>/<int:month>/', views.month_archive, name='month-archive'),
@@ -48,3 +53,6 @@ urlpatterns = [
 
 # Error handler example (should be set in root URLconf)
 handler404 = 'urls_demo.views.custom_404_view'
+handler500 = 'urls_demo.views.my_custom_error_view'
+handler403 = 'urls_demo.views.my_custom_permission_denied_view'
+handler400 = 'urls_demo.views.my_custom_bad_request_view'
