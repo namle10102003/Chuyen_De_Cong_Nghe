@@ -1,3 +1,106 @@
+import datetime
+from django.http import HttpResponse, HttpResponseNotFound, Http404
+
+# A simple view trả về thời gian hiện tại
+def current_datetime(request):
+	now = datetime.datetime.now()
+	html = f'''
+		<h2>Current Datetime</h2>
+		<ul>
+			<li>Thời gian hiện tại: {now}</li>
+			<li>View: current_datetime</li>
+			<li>URL: /urls-demo/current-datetime/</li>
+			<li>Đây là ví dụ view trả về thời gian hiện tại.</li>
+		</ul>
+	'''
+	return HttpResponse(html)
+
+# View trả về 404 hoặc 200
+def my_view(request):
+	foo = request.GET.get('foo', None)
+	if foo:
+		return HttpResponseNotFound("""
+			<h2>Page not found (404)</h2>
+			<ul>
+				<li>Tham số foo: {foo}</li>
+				<li>Trả về HttpResponseNotFound</li>
+				<li>URL: /urls-demo/my-view/?foo=1</li>
+			</ul>
+		""")
+	else:
+		return HttpResponse("""
+			<h2>Page was found (200)</h2>
+			<ul>
+				<li>Không có tham số foo</li>
+				<li>Trả về HttpResponse 200</li>
+				<li>URL: /urls-demo/my-view/</li>
+			</ul>
+		""")
+
+# View trả về status code bất kỳ
+def created_view(request):
+	return HttpResponse("""
+		<h2>Created (201)</h2>
+		<ul>
+			<li>Trả về status code 201 (Created)</li>
+			<li>URL: /urls-demo/created/</li>
+			<li>Ví dụ trả về mã HTTP bất kỳ</li>
+		</ul>
+	""", status=201)
+
+# View raise Http404
+def detail_404(request, poll_id):
+	# Giả lập không tìm thấy poll
+	raise Http404(f"Poll {poll_id} does not exist (ví dụ raise Http404)")
+
+# Custom error handlers
+	return HttpResponse("""
+		<h2>Custom 404 page from mysite.views</h2>
+		<ul>
+			<li>Đây là trang 404 do bạn tự định nghĩa.</li>
+			<li>URL không tồn tại hoặc bị lỗi.</li>
+		</ul>
+	""", status=404)
+
+	return HttpResponse("""
+		<h2>Custom 500 page from mysite.views</h2>
+		<ul>
+			<li>Đây là trang 500 do bạn tự định nghĩa.</li>
+			<li>Lỗi server nội bộ.</li>
+		</ul>
+	""", status=500)
+
+	return HttpResponse("""
+		<h2>Custom 403 page from mysite.views</h2>
+		<ul>
+			<li>Bạn không có quyền truy cập tài nguyên này.</li>
+			<li>Ví dụ custom handler403.</li>
+		</ul>
+	""", status=403)
+
+	return HttpResponse("""
+		<h2>Custom 400 page from mysite.views</h2>
+		<ul>
+			<li>Yêu cầu không hợp lệ.</li>
+			<li>Ví dụ custom handler400.</li>
+		</ul>
+	""", status=400)
+
+# Async view example
+import asyncio
+async def async_current_datetime(request):
+	await asyncio.sleep(0.1)
+	now = datetime.datetime.now()
+	html = f'''
+		<h2>Async Current Datetime</h2>
+		<ul>
+			<li>Thời gian hiện tại: {now}</li>
+			<li>View: async_current_datetime (async)</li>
+			<li>URL: /urls-demo/async-current-datetime/</li>
+			<li>Ví dụ view async (Python async def)</li>
+		</ul>
+	'''
+	return HttpResponse(html)
 
 from django.http import HttpResponse
 
