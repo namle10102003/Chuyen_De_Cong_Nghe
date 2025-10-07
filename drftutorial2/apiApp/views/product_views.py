@@ -3,18 +3,23 @@ from rest_framework.decorators import api_view
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from ..models import Product
 from ..serializers import ProductListSerializer, ProductDetailSerializer, ProductCreateSerializer
 # ...existing code...
 from rest_framework import status
+
 
 @cache_page(60 * 15)
 @vary_on_cookie
 @api_view(['GET'])
 def product_list(request):
     products = Product.objects.all()
-    serializer = ProductListSerializer(products, many=True)
-    return Response(serializer.data)
+    paginator = PageNumberPagination()
+    paginator.page_size = 10  # Số sản phẩm mỗi trang, có thể chỉnh tuỳ ý
+    result_page = paginator.paginate_queryset(products, request)
+    serializer = ProductListSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
 def product_list_admin(request):
