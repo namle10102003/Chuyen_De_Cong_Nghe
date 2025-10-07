@@ -23,11 +23,23 @@ def product_list_admin(request):
     return Response(serializer.data)
 
 
+
 @api_view(['GET'])
 def product_list_by_category(request):
     category_name = request.query_params.get("category_name")
-    products = Product.objects.filter(featured=True, category__name__icontains=category_name)
-    serializer = ProductListSerializer(products, many=True)
+    price_min = request.query_params.get("price_min")
+    price_max = request.query_params.get("price_max")
+    featured = request.query_params.get("featured")
+    queryset = Product.objects.all()
+    if category_name:
+        queryset = queryset.filter(category__name__icontains=category_name)
+    if price_min:
+        queryset = queryset.filter(price__gte=price_min)
+    if price_max:
+        queryset = queryset.filter(price__lte=price_max)
+    if featured is not None:
+        queryset = queryset.filter(featured=featured.lower() in ['true', '1', 'yes'])
+    serializer = ProductListSerializer(queryset, many=True)
     return Response(serializer.data)
 
 
