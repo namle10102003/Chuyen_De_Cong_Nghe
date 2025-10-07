@@ -1,0 +1,53 @@
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
+from ..models import CustomerAddress
+
+
+
+from rest_framework.validators import UniqueValidator
+
+class UserSerializer(serializers.ModelSerializer):
+    avatar = serializers.SerializerMethodField()
+    joined_on = serializers.SerializerMethodField()
+    state = serializers.SerializerMethodField()
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=get_user_model().objects.all(), message="Email đã tồn tại!")]
+    )
+    role = serializers.PrimaryKeyRelatedField(queryset=get_user_model().role.field.related_model.objects.all(), required=False, allow_null=True, write_only=True)
+    role_name = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = [
+            "id", "email", "username", "profile_picture_url", "avatar", "joined_on", "state", "role", "role_name", "is_staff_account", "password"
+        ]
+        extra_kwargs = {
+            'password': {'write_only': True}  # Ensure password is write-only
+        }
+
+    def create(self, validated_data):
+        password = validated_data.pop("password", None)
+        user = super().create(validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
+            user.password = password  # For returning in response
+        return user
+
+    def get_role_name(self, obj):
+        return obj.role.name if obj.role else None
+
+    def get_avatar(self, obj):
+        return obj.profile_picture_url or "https://i.pravatar.cc/300"
+
+    def get_joined_on(self, obj):
+        return obj.date_joined.strftime("%a %b %d %Y %H:%M:%S GMT%z (%Z)")
+
+    def get_state(self, obj):
+        return True
+
+class CustomerAddressSerializer(serializers.ModelSerializer):
+    customer = UserSerializer(read_only=True)
+    class Meta:
+        model = CustomerAddress
+        fields = "__all__"
